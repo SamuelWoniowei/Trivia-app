@@ -27,7 +27,8 @@ def create_app(test_config=None):
     setup_db(app)
 
     """
-    @TODO: Set up CORS. Allow '*' for origins. Delete the sample route after completing the TODOs
+    @TODO: Set up CORS. Allow '*' for origins. Delete the sample route after
+    completing the TODOs
     """
 
     """
@@ -56,7 +57,9 @@ def create_app(test_config=None):
 
         return jsonify({
             'success': True,
-            'categories': {category.id: category.type for category in categories}
+            'categories': {
+                category.id: category.type for category in categories
+            }
         })
 
     """
@@ -65,11 +68,10 @@ def create_app(test_config=None):
     including pagination (every 10 questions).
     This endpoint should return a list of questions,
     number of total questions, current category, categories.
-
-    
     TEST: At this point, when you start the application
     you should see questions and categories generated,
-    ten questions per page and pagination at the bottom of the screen for three pages.
+    ten questions per page and pagination at the bottom of the screen for three
+    pages.
     Clicking on the page numbers should update the questions.
     """
     @app.route('/questions')
@@ -86,14 +88,17 @@ def create_app(test_config=None):
             'success': True,
             'questions': current_questions,
             'total_questions': len(questions),
-            'categories': {category.id: category.type for category in categories},
+            'categories': {
+                category.id: category.type for category in categories
+            },
             'current_category': None
         })
     """
     @TODO:
     Create an endpoint to DELETE question using a question ID.
 
-    TEST: When you click the trash icon next to a question, the question will be removed.
+    TEST: When you click the trash icon next to a question, the question will
+    be removed.
     This removal will persist in the database and when you refresh the page.
     """
     @app.route("/questions/<int:question_id>", methods=['DELETE'])
@@ -106,23 +111,23 @@ def create_app(test_config=None):
                 "success": True,
                 "deleted": question_id
             })
-        except:
+        except BaseException:
             abort(422)
     """
     @TODO:
     Create an endpoint to POST a new question,
     which will require the question and answer text,
     category, and difficulty score.
-
     TEST: When you submit a question on the "Add" tab,
-    the form will clear and the question will appear at the end of the last page
-    of the questions list in the "List" tab.
+    the form will clear and the question will appear at the end of the last
+    page of the questions list in the "List" tab.
     """
     @app.route("/questions", methods=['POST'])
     def create_question():
         body = request.get_json()
 
-        if not ('question' in body and 'answer' in body and 'difficulty' in body and 'category' in body):
+        if not ('question' in body and 'answer' in body and
+                'difficulty' in body and 'category' in body):
             abort(422)
 
         new_question = body.get('question')
@@ -132,14 +137,15 @@ def create_app(test_config=None):
 
         try:
             question = Question(question=new_question, answer=new_answer,
-                                difficulty=new_difficulty, category=new_category)
+                                difficulty=new_difficulty,
+                                category=new_category)
             question.insert()
 
             return jsonify({
                 "success": True,
                 "created": question.id
             })
-        except:
+        except BaseException:
             abort(422)
     """
     @TODO:
@@ -202,7 +208,7 @@ def create_app(test_config=None):
                 "total_questions": len(questions),
                 "current_category": category_id,
             })
-        except:
+        except BaseException:
             abort(404)
     """
     @TODO:
@@ -225,7 +231,8 @@ def create_app(test_config=None):
             previous_questions = body.get('previous_questions', None)
 
             if category['id'] == 0:
-                available_quizzes = Question.query.filter(Question.id.notin_(previous_questions)).all()
+                available_quizzes = Question.query.filter(
+                    Question.id.notin_(previous_questions)).all()
             else:
                 available_quizzes = Question.query.filter(
                     Question.category == str(category['id'])
@@ -234,16 +241,18 @@ def create_app(test_config=None):
                 ).all()
 
             if len(available_quizzes) > 0:
-                question = available_quizzes[random.randrange(0, len(available_quizzes))].format()
+                question = available_quizzes[random.randrange(
+                    0, len(available_quizzes))].format()
             else:
                 question = None
+                abort(404)
 
             return jsonify({
                 'success': True,
                 'question': question
             })
 
-        except:
+        except BaseException:
             abort(422)
 
     """
